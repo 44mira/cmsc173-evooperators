@@ -1,5 +1,5 @@
 from numpy import exp, sqrt, cos, e, pi
-from random import random, choices
+from random import random, randint, choices
 
 # !! VALUES ARE ONLY ROUNDED ON DISPLAY, NOT FOR CALCULATIONS !!
 
@@ -25,9 +25,6 @@ def ackley(xs):
     return value
 
 
-r_bounds = -32.768, 32.768
-
-
 def generate_solution(lb, ub, dimensions):
     return [lb + (ub - lb) * random() for _ in range(dimensions)]
 
@@ -40,29 +37,47 @@ def get_strength(solution, optimal):
 
 
 def select_parents(weights):
+    # parents are randomized based on weights, they are labelled 1 to `len(weights)`
     parents = choices(range(1, len(weights) + 1), weights=weights, k=2)
 
     return parents
 
 
-def uniform_crossover(p1, p2, bias=0.5):
+def uniform_crossover(p1, p2, count=2, bias=0.5):
     dimension = len(p1)
     flip = lambda: random() < bias
 
-    baby1, baby2 = [], []
+    babies = [[] for _ in range(count)]
 
+    # for each gene: each baby retains the gene either from p1 or p2, based on `bias`
     for i in range(dimension):
-        if flip():
-            baby1.append(p1[i])
-        else:
-            baby1.append(p2[i])
+        for baby in babies:
+            if flip():
+                baby.append(p1[i])
+            else:
+                baby.append(p2[i])
 
-        if flip():
-            baby2.append(p1[i])
-        else:
-            baby2.append(p2[i])
+    return babies
 
-    return baby1, baby2
+
+def inverse_mutation(solution):
+    upper_bound = len(solution)
+    index1 = randint(0, upper_bound)
+    index2 = randint(0, upper_bound)
+
+    # make sure the indices are not equal
+    while index1 == index2:
+        index2 = randint(0, upper_bound)
+
+    # make sure index1 is the left bound
+    if index1 > index2:
+        index1, index2 = index2, index1
+
+    # reverse the subarray
+    reversed_subarray = solution[index1 : index2 + 1][::-1]
+    solution[index1 : index2 + 1] = reversed_subarray
+
+    return solution
 
 
 def display_parent(parent, fitness, n):
@@ -80,6 +95,7 @@ def display_baby(baby, n):
 def main():
     hr = lambda: print(f"\n{"-"*5}\n")  # formatting
     dimensions = 5
+    r_bounds = -32.768, 32.768
 
     solutions = []
     solutions_fitness = []
@@ -110,6 +126,12 @@ def main():
     baby1, baby2 = uniform_crossover(solutions[parent1 - 1], solutions[parent2 - 1])
     display_baby(baby1, 1)
     display_baby(baby2, 2)
+
+    hr()  # Mutation ---
+    print(f">> Mutated Offspring:\n")
+    m_baby1, m_baby2 = map(inverse_mutation, (baby1, baby2))
+    display_baby(m_baby1, 1)
+    display_baby(m_baby2, 2)
 
 
 if __name__ == "__main__":
