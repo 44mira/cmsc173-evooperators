@@ -1,7 +1,5 @@
-from numpy import linspace, exp, sqrt, cos, e, pi
-from numpy import meshgrid
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+from numpy import exp, sqrt, cos, e, pi
+from random import random, choices
 
 # The Ackley Function
 
