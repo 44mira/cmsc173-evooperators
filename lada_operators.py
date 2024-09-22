@@ -85,8 +85,9 @@ def display_parent(parent, fitness, n):
     print(f"Fitness of Selected Parent {n}: {fitness:.4f}")
 
 
-def display_baby(baby, n):
+def display_baby(baby, fitness, n):
     print(f"Offspring {n}: {[round(b, 4) for b in baby]}")
+    print(f"Fitness of Offspring {n}: {fitness:.4f}")
 
 
 # ---
@@ -124,14 +125,14 @@ def main():
     hr()  # Crossover ---
     print(f">> Produced Offspring:\n")
     baby1, baby2 = uniform_crossover(solutions[parent1 - 1], solutions[parent2 - 1])
-    display_baby(baby1, 1)
-    display_baby(baby2, 2)
+    display_baby(baby1, ackley(baby1), 1)
+    display_baby(baby2, ackley(baby2), 2)
 
     hr()  # Mutation ---
     print(f">> Mutated Offspring:\n")
     m_baby1, m_baby2 = map(inverse_mutation, (baby1, baby2))
-    display_baby(m_baby1, 1)
-    display_baby(m_baby2, 2)
+    display_baby(m_baby1, ackley(m_baby1), 1)
+    display_baby(m_baby2, ackley(m_baby2), 2)
 
 
 if __name__ == "__main__":
